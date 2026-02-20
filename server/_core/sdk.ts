@@ -187,6 +187,12 @@ class SDKServer {
     const expirationSeconds = Math.floor((issuedAt + expiresInMs) / 1000);
     const secretKey = this.getSessionSecret();
 
+    console.log("JWT DEBUG:", {
+    openId: payload.openId,
+    appId: payload.appId,
+    name: payload.name,
+    });
+
     return new SignJWT({
       openId: payload.openId,
       appId: payload.appId,
@@ -198,39 +204,41 @@ class SDKServer {
   }
 
   async verifySession(
-    cookieValue: string | undefined | null
-  ): Promise<{ openId: string; appId: string; name: string } | null> {
-    if (!cookieValue) {
-      console.warn("[Auth] Missing session cookie");
-      return null;
-    }
-
-    try {
-      const secretKey = this.getSessionSecret();
-      const { payload } = await jwtVerify(cookieValue, secretKey, {
-        algorithms: ["HS256"],
-      });
-      const { openId, appId, name } = payload as Record<string, unknown>;
-
-      if (
-        !isNonEmptyString(openId) ||
-        !isNonEmptyString(appId) 
-        
-      ) {
-        console.warn("[Auth] Session payload missing required fields");
-        return null;
-      }
-
-      return {
-        openId,
-        appId,
-        
-      };
-    } catch (error) {
-      console.warn("[Auth] Session verification failed", String(error));
-      return null;
-    }
+  cookieValue: string | undefined | null
+): Promise<{ openId: string; appId: string; name: string } | null> {
+  if (!cookieValue) {
+    console.warn("[Auth] Missing session cookie");
+    return null;
   }
+
+  try {
+    const secretKey = this.getSessionSecret();
+    const { payload } = await jwtVerify(cookieValue, secretKey, {
+      algorithms: ["HS256"],
+    });
+
+    console.log("JWT DEBUG VERIFY:", payload); // ✅ correct place
+
+    const { openId, appId, name } = payload as Record<string, unknown>;
+
+    if (
+      !isNonEmptyString(openId) ||
+      !isNonEmptyString(appId)
+    ) {
+      console.warn("[Auth] Session payload missing required fields");
+      return null;
+    }
+
+    return {
+      openId,
+      appId,
+      name: typeof name === "string" ? name : "",
+    };
+  } catch (error) {
+    console.warn("[Auth] Session verification failed", String(error));
+    return null;
+  }
+}
 
   async getUserInfoWithJwt(
     jwtToken: string
