@@ -90,13 +90,15 @@ export const appRouter = router({
           }
 
           // Send welcome email
-          const emailSent = await sendEmail({
-            to: input.email,
-            subject: "Welcome to Ramadan Challenge!",
-            html: `<p>Dear ${input.name},</p><p>Thank you for registering for the <strong>Ramadan Challenge</strong>!</p><p>You can now log in and start tracking your daily activities to earn points and compete for prizes.</p><p>May Allah accept your efforts during this blessed month.</p><p>Best regards,<br>Ramadan Challenge Team</p>`,
-          });
-          if (!emailSent) {
-            console.warn("[Auth] Welcome email failed to send but registration completed");
+          try {
+            await sendEmail({
+              to: input.email,
+              subject: "Welcome to Ramadan Challenge!",
+              html: `<p>Dear ${input.name},</p><p>Thank you for registering for the <strong>Ramadan Challenge</strong>!</p><p>You can now log in and start tracking your daily activities to earn points and compete for prizes.</p><p>May Allah accept your efforts during this blessed month.</p><p>Best regards,<br>Ramadan Challenge Team</p>`,
+            });
+          } catch (emailError) {
+            console.error("[Auth] Failed to send welcome email:", emailError);
+            // Don't fail registration if email fails
           }
 
           console.log("[Auth] New user registered:", input.email);
@@ -143,10 +145,7 @@ export const appRouter = router({
           const cookieOptions = getSessionCookieOptions(ctx.req);
           ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
           
-          console.log("[Auth] User logged in:", input.email);
-          console.log("[Auth] Cookie name:", COOKIE_NAME);
-          console.log("[Auth] Cookie options:", JSON.stringify(cookieOptions));
-          console.log("[Auth] Session token set, length:", sessionToken.length);
+          console.log("[Auth] User logged in:", input.email, "Cookie options:", JSON.stringify(cookieOptions));
           return { success: true, user };
         } catch (error) {
           if (error instanceof TRPCError) throw error;

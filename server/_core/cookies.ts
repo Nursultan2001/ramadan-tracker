@@ -41,19 +41,12 @@ export function getSessionCookieOptions(
     hostname !== "127.0.0.1" &&
     hostname !== "::1";
 
-  let domain: string | undefined = undefined;
-  
-  if (shouldSetDomain && !hostname.startsWith(".")) {
-    // For Manus domains (*.manus.computer, *.manus.space), use the hostname directly
-    // For other domains, add leading dot for subdomain sharing
-    if (hostname.includes("manus.computer") || hostname.includes("manus.space")) {
-      domain = hostname;
-    } else {
-      domain = `.${hostname}`;
-    }
-  } else if (shouldSetDomain) {
-    domain = hostname;
-  }
+  const domain =
+    shouldSetDomain && !hostname.startsWith(".")
+      ? `.${hostname}`
+      : shouldSetDomain
+        ? hostname
+        : undefined;
 
   const secure = isSecureRequest(req);
   

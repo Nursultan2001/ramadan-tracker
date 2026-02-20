@@ -16,9 +16,9 @@ export default function Login() {
   
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: async () => {
-      // Refetch user data immediately after login
-      await utils.auth.me.refetch();
       toast.success("Login successful!");
+      // Invalidate auth query to refetch user data
+      await utils.auth.me.invalidate();
       // Redirect to dashboard after successful login
       setLocation("/dashboard");
     },
