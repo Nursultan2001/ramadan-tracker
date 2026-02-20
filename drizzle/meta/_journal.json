@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1771203785726,
+      "tag": "0000_little_mandrill",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1771203957357,
+      "tag": "0001_blue_talon",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1771208210451,
+      "tag": "0002_zippy_power_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1771209570642,
+      "tag": "0003_classy_nighthawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1771497890879,
+      "tag": "0004_natural_professor_monster",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1771510768411,
+      "tag": "0005_fuzzy_the_liberteens",
+      "breakpoints": true
+    }
+  ]
+}
