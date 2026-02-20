@@ -16,7 +16,7 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
 
   try {
     const { error } = await resend.emails.send({
-      from: "Ramadan Challenge <onboarding@resend.dev>",
+      from: "Ramadan Challenge <no-reply@ramadanchallange.com>",
       to: payload.to,
       subject: payload.subject,
       html: payload.html,
