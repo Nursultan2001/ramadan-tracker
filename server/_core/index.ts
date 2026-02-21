@@ -16,6 +16,14 @@ import { initializeWebSocket } from "../websocket";
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  app.set("trust proxy", 1);
+
+app.use((req, res, next) => {
+  if (req.headers["x-forwarded-proto"] !== "https") {
+    return res.redirect("https://" + req.headers.host + req.url);
+  }
+  next();
+});
   
   // Initialize WebSocket server
   initializeWebSocket(server);
