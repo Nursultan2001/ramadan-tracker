@@ -487,13 +487,25 @@ export const appRouter = router({
           });
         }
 
-        try {
-          await notifyOwner({
-            title: `Email sent to ${user.name || 'User'}`,
-            content: `Subject: ${input.subject}\n\nMessage: ${input.message}\n\nRecipient: ${user.email}`,
-          });
-          return { success: true, message: `Email sent to ${user.email}` };
-        } catch (error) {
+try {
+  const result = await sendEmail({
+    to: user.email,
+    subject: input.subject,
+    html: `
+      <p>Dear ${user.name || "User"},</p>
+      <p>${input.message}</p>
+      <p>Best regards,<br>Ramadan Challenge Team</p>
+    `,
+  });
+
+  if (!result) {
+    throw new Error("Resend failed");
+  }
+
+  return { success: true, message: `Email sent to ${user.email}` };
+}
+        
+          catch (error) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to send email',
