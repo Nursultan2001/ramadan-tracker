@@ -2,6 +2,7 @@ import { eq, and, desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, dailyActivities, DailyActivity, InsertDailyActivity, leaderboardSnapshots, LeaderboardSnapshot, InsertLeaderboardSnapshot, userPreferences, UserPreference, InsertUserPreference, announcements, Announcement, InsertAnnouncement, announcementDelivery, AnnouncementDelivery, InsertAnnouncementDelivery } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import { sendEmail } from "./_core/email";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -337,24 +338,57 @@ export async function getAnnouncements() {
 export async function sendAnnouncement(announcementId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
+  // Get announcement
+  const announcementResult = await db
+    .select()
+    .from(announcements)
+    .where(eq(announcements.id, announcementId))
+    .limit(1);
+
+  if (announcementResult.length === 0) {
+    throw new Error("Announcement not found");
+  }
+
+  const announcement = announcementResult[0];
+
   // Get all users
   const allUsers = await db.select().from(users);
-  
-  // Create delivery records for each user
+
   for (const user of allUsers) {
-    await db.insert(announcementDelivery).values({
-      announcementId,
-      userId: user.id,
-      status: "pending",
-    });
+    if (!user.email) continue;
+
+    try {
+      const emailSent = await sendEmail({
+        to: user.email,
+        subject: announcement.title,
+        html: `
+          <p>Dear ${user.name || "User"},</p>
+          <p>${announcement.content}</p>
+          <p>Best regards,<br>Ramadan Challenge Team</p>
+        `,
+      });
+
+      await db.insert(announcementDelivery).values({
+        announcementId,
+        userId: user.id,
+        status: emailSent ? "delivered" : "failed",
+      });
+
+    } catch (error) {
+      await db.insert(announcementDelivery).values({
+        announcementId,
+        userId: user.id,
+        status: "failed",
+      });
+    }
   }
-  
-  // Update announcement status to sent
+
+  // Update announcement status
   await db.update(announcements)
     .set({ status: "sent", sentAt: new Date() })
     .where(eq(announcements.id, announcementId));
-  
+
   return { success: true };
 }
 
