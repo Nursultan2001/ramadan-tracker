@@ -39,18 +39,19 @@ export default function Dashboard() {
   const updateDisplayNameMutation = trpc.auth.updateDisplayName.useMutation();
 
   // Activity form states
-  const [dailyPrayers, setDailyPrayers] = useState(0);
-  const [tahajud, setTahajud] = useState(0);
-  const [tarawih20, setTarawih20] = useState(0);
-  const [tarawih8, setTarawih8] = useState(0);
-  const [fasting, setFasting] = useState(0);
-  const [quranArabicPages, setQuranArabicPages] = useState(0);
-  const [quranOtherLanguagePages, setQuranOtherLanguagePages] = useState(0);
-  const [islamicBookPages, setIslamicBookPages] = useState(0);
-  const [otherBookPages, setOtherBookPages] = useState(0);
+  const [dailyPrayers, setDailyPrayers] = useState("");
+  const [tahajud, setTahajud] = useState("");
+  const [tarawih20, setTarawih20] = useState("");
+  const [tarawih8, setTarawih8] = useState("");
+  const [fasting, setFasting] = useState("");
+  const [quranArabicPages, setQuranArabicPages] = useState("");
+  const [quranOtherLanguagePages, setQuranOtherLanguagePages] = useState("");
+  const [islamicBookPages, setIslamicBookPages] = useState("");
+  const [otherBookPages, setOtherBookPages] = useState("");
 
-  const [podcastMinutes, setPodcastMinutes] = useState(0);
-  const [salawat, setSalawat] = useState(0);
+  const [zhevshenPages, setZhevshenPages] = useState("");
+  const [podcastMinutes, setPodcastMinutes] = useState("");
+  const [salawat, setSalawat] = useState("");
   const [notes, setNotes] = useState("");
 
   // Queries
@@ -66,31 +67,31 @@ export default function Dashboard() {
   // Load today's activity if it exists
 useEffect(() => {
   if (selectedActivity) {
-    setDailyPrayers(selectedActivity.dailyPrayers || 0);
-    setTahajud(selectedActivity.tahajud || 0);
-    setTarawih20(selectedActivity.tarawih20 || 0);
-    setTarawih8(selectedActivity.tarawih8 || 0);
-    setFasting(selectedActivity.fasting || 0);
-    setQuranArabicPages(selectedActivity.quranArabicPages || 0);
-    setQuranOtherLanguagePages(selectedActivity.quranOtherLanguagePages || 0);
-    setIslamicBookPages(selectedActivity.islamicBookPages || 0);
-    setOtherBookPages(selectedActivity.otherBookPages || 0);
-    setPodcastMinutes(selectedActivity.podcastMinutes || 0);
-    setSalawat(selectedActivity.salawat || 0);
+    setDailyPrayers(selectedActivity.dailyPrayers?.toString() || "");
+    setTahajud(selectedActivity.tahajud?.toString() || "");
+    setTarawih20(selectedActivity.tarawih20?.toString() || "");
+    setTarawih8(selectedActivity.tarawih8?.toString() || "");
+    setFasting(selectedActivity.fasting?.toString() || "");
+    setQuranArabicPages(selectedActivity.quranArabicPages?.toString() || "");
+    setQuranOtherLanguagePages(selectedActivity.quranOtherLanguagePages?.toString() || "");
+    setIslamicBookPages(selectedActivity.islamicBookPages?.toString() || "");
+    setOtherBookPages(selectedActivity.otherBookPages?.toString() || "");
+    setPodcastMinutes(selectedActivity.podcastMinutes?.toString() || "");
+    setSalawat(selectedActivity.salawat?.toString() || "");
     setNotes(selectedActivity.notes || "");
   } else {
-    // CLEAR form when no activity exists for that date
-    setDailyPrayers(0);
-    setTahajud(0);
-    setTarawih20(0);
-    setTarawih8(0);
-    setFasting(0);
-    setQuranArabicPages(0);
-    setQuranOtherLanguagePages(0);
-    setIslamicBookPages(0);
-    setOtherBookPages(0);
-    setPodcastMinutes(0);
-    setSalawat(0);
+    setDailyPrayers("");
+    setTahajud("");
+    setTarawih20("");
+    setTarawih8("");
+    setFasting("");
+    setQuranArabicPages("");
+    setQuranOtherLanguagePages("");
+    setIslamicBookPages("");
+    setOtherBookPages("");
+    setZhevshenPages("");
+    setPodcastMinutes("");
+    setSalawat("");
     setNotes("");
   }
 }, [selectedActivity]);
@@ -129,21 +130,21 @@ useEffect(() => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const result = await submitMutation.mutateAsync({
-        activityDate: selectedDate,
-        dailyPrayers,
-        tahajud,
-        tarawih20,
-        tarawih8,
-        fasting,
-        quranArabicPages,
-        quranOtherLanguagePages,
-                islamicBookPages,
-                otherBookPages,
-        podcastMinutes,
-        salawat,
-        notes,
-      });
+const result = await submitMutation.mutateAsync({
+  activityDate: selectedDate,
+  dailyPrayers: Number(dailyPrayers) || 0,
+  tahajud: Number(tahajud) || 0,
+  tarawih20: Number(tarawih20) || 0,
+  tarawih8: Number(tarawih8) || 0,
+  fasting: Number(fasting) || 0,
+  quranArabicPages: Number(quranArabicPages) || 0,
+  quranOtherLanguagePages: Number(quranOtherLanguagePages) || 0,
+  islamicBookPages: Number(islamicBookPages) || 0,
+  otherBookPages: Number(otherBookPages) || 0,
+  podcastMinutes: Number(podcastMinutes) || 0,
+  salawat: Number(salawat) || 0,
+  notes,
+});
       toast.success(`Activities submitted for ${selectedDate}! You earned ${result.totalPoints} points.`);
     } catch (error) {
       toast.error("Failed to submit activities");
@@ -251,7 +252,7 @@ useEffect(() => {
                           min="0"
                           max="5"
                           value={dailyPrayers}
-                          onChange={(e) => setDailyPrayers(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setDailyPrayers(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -262,7 +263,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={tahajud}
-                          onChange={(e) => setTahajud(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setTahajud(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -273,7 +274,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={tarawih20}
-                          onChange={(e) => setTarawih20(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setTarawih20(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -284,7 +285,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={tarawih8}
-                          onChange={(e) => setTarawih8(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setTarawih8(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -296,7 +297,7 @@ useEffect(() => {
                           min="0"
                           max="1"
                           value={fasting}
-                          onChange={(e) => setFasting(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setFasting(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -314,7 +315,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={quranArabicPages}
-                          onChange={(e) => setQuranArabicPages(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setQuranArabicPages(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -325,7 +326,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={quranOtherLanguagePages}
-                          onChange={(e) => setQuranOtherLanguagePages(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setQuranOtherLanguagePages(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -344,7 +345,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={islamicBookPages}
-                          onChange={(e) => setIslamicBookPages(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setIslamicBookPages(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -355,7 +356,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={otherBookPages}
-                          onChange={(e) => setOtherBookPages(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setOtherBookPages(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -366,7 +367,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={podcastMinutes}
-                          onChange={(e) => setPodcastMinutes(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setPodcastMinutes(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
@@ -377,7 +378,7 @@ useEffect(() => {
                           type="number"
                           min="0"
                           value={salawat}
-                          onChange={(e) => setSalawat(parseInt(e.target.value) || 0)}
+                          onChange={(e) => setSalawat(e.target.value)}
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>

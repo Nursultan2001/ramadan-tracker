@@ -66,6 +66,7 @@ export const dailyActivities = mysqlTable("dailyActivities", {
   islamicBookPages: int("islamicBookPages").default(0).notNull(),
   /** Other book pages - 4 points each */
   otherBookPages: int("otherBookPages").default(0).notNull(),
+  zhevshenPages: int("zhevshen_pages").default(0),
   
   // Audio activities
   /** Islamic podcast minutes (quality content) - 3 points per minute */

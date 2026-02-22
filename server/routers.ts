@@ -24,8 +24,9 @@ const POINTS = {
   fasting: 100,           // Full day fasting
   quranArabic: 20,        // Per Arabic Quran page
   quranOtherLanguage: 10, // Per other language Quran page
-  islamicBook: 8,         // Per Islamic book page
-  otherBook: 4,           // Per other book page
+  islamicBook: 10,         // Per Islamic book page
+  otherBook: 8,           // Per other book page
+  zhevshen: 5,           // Per page of Zhevshen's "The Path of Muhammad"
   podcast: 3,             // Per minute of quality Islamic podcast
   salawat: 0.1,           // 10 salawat = 1 point
 };
@@ -285,6 +286,7 @@ export const appRouter = router({
           quranOtherLanguagePages: z.number().default(0),
           islamicBookPages: z.number().default(0),
           otherBookPages: z.number().default(0),
+          zhevshenPages: z.number().default(0),          
           podcastMinutes: z.number().default(0),
           salawat: z.number().default(0),
           notes: z.string().optional(),
@@ -304,6 +306,7 @@ export const appRouter = router({
           input.quranOtherLanguagePages * POINTS.quranOtherLanguage +
           input.islamicBookPages * POINTS.islamicBook +
           input.otherBookPages * POINTS.otherBook +
+          input.zhevshenPages * POINTS.zhevshen +
           input.podcastMinutes * POINTS.podcast +
           input.salawat * POINTS.salawat
         );
@@ -323,6 +326,7 @@ export const appRouter = router({
             quranOtherLanguagePages: input.quranOtherLanguagePages,
             islamicBookPages: input.islamicBookPages,
             otherBookPages: input.otherBookPages,
+            zhevshenPages: input.zhevshenPages,
             podcastMinutes: input.podcastMinutes,
             salawat: input.salawat,
             totalPoints,
@@ -342,6 +346,7 @@ export const appRouter = router({
             quranOtherLanguagePages: input.quranOtherLanguagePages,
             islamicBookPages: input.islamicBookPages,
             otherBookPages: input.otherBookPages,
+            zhevshenPages: input.zhevshenPages,
             podcastMinutes: input.podcastMinutes,
             salawat: input.salawat,
             totalPoints,
@@ -447,6 +452,50 @@ export const appRouter = router({
       const users = await db.getAllUsersWithActivities();
       return users || [];
     }),
+    
+    recalculateAllPoints: adminProcedure.mutation(async () => {
+  const allUsers = await db.getAllUsers();
+
+  for (const user of allUsers) {
+    const activities = await db.getUserActivities(user.id);
+
+    for (const activity of activities) {
+      const totalPoints = Math.round(
+        activity.dailyPrayers * POINTS.dailyPrayer +
+        activity.tahajud * POINTS.tahajud +
+        activity.tarawih20 * POINTS.tarawih20 +
+        activity.tarawih8 * POINTS.tarawih8 +
+        activity.fasting * POINTS.fasting +
+        activity.quranArabicPages * POINTS.quranArabic +
+        activity.quranOtherLanguagePages * POINTS.quranOtherLanguage +
+        activity.islamicBookPages * POINTS.islamicBook +
+        activity.otherBookPages * POINTS.otherBook +
+        activity.zhevshenPages * POINTS.zhevshen +
+        activity.podcastMinutes * POINTS.podcast +
+        activity.salawat * POINTS.salawat
+      );
+
+      await db.updateDailyActivity(activity.id, {
+        totalPoints,
+      });
+    }
+  }
+
+  // Recalculate leaderboard after update
+  const usersWithPoints = await db.getAllUsersWithTotalPoints();
+  const leaderboardData = (usersWithPoints || []).map((user, index) => ({
+    rank: index + 1,
+    userId: user.userId,
+    userName: user.userName || 'Anonymous',
+    totalPoints: Number(user.totalPoints) || 0,
+    isTopFive: index < 5,
+  }));
+
+  broadcastLeaderboardUpdate(leaderboardData);
+
+  return { success: true, message: "All points recalculated successfully." };
+}),
+
 
     publishLeaderboard: adminProcedure
       .input(z.object({ publishDate: z.string() }))
