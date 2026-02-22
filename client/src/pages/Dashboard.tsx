@@ -339,7 +339,7 @@ const result = await submitMutation.mutateAsync({
                     <h3 className="font-semibold text-base md:text-lg mb-3 text-primary">Reading & Learning</h3>
                     <div className="grid grid-cols-2 gap-3 md:gap-4">
                       <div>
-                        <Label htmlFor="islamicBook" className="text-xs md:text-sm">Islamic Book Pages (8 pts)</Label>
+                        <Label htmlFor="islamicBook" className="text-xs md:text-sm">Islamic Book Pages (10 pts)</Label>
                         <Input
                           id="islamicBook"
                           type="number"
@@ -350,7 +350,7 @@ const result = await submitMutation.mutateAsync({
                         />
                       </div>
                       <div>
-                        <Label htmlFor="otherBook" className="text-xs md:text-sm">Other Book Pages (4 pts)</Label>
+                        <Label htmlFor="otherBook" className="text-xs md:text-sm">Other Book Pages (8 pts)</Label>
                         <Input
                           id="otherBook"
                           type="number"
@@ -360,6 +360,19 @@ const result = await submitMutation.mutateAsync({
                           className="text-sm md:text-base h-8 md:h-10"
                         />
                       </div>
+
+                      <div>
+                        <Label htmlFor="zhevshen" className="text-xs md:text-sm">Zhevshen Pages (5 pts)</Label>
+                        <Input
+                          id="zhevshen"
+                          type="number"
+                          min="0"
+                          value={zhevshenPages}
+                          onChange={(e) => setZhevshenPages(e.target.value)}
+                          className="text-sm md:text-base h-8 md:h-10"
+                        />
+                      </div>
+
                       <div>
                         <Label htmlFor="podcast" className="text-xs md:text-sm">Podcast Minutes (3 pts/min)</Label>
                         <Input
