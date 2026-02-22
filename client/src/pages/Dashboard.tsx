@@ -76,6 +76,7 @@ useEffect(() => {
     setQuranOtherLanguagePages(selectedActivity.quranOtherLanguagePages?.toString() || "");
     setIslamicBookPages(selectedActivity.islamicBookPages?.toString() || "");
     setOtherBookPages(selectedActivity.otherBookPages?.toString() || "");
+    setZhevshenPages(selectedActivity.zhevshenPages?.toString() || "");
     setPodcastMinutes(selectedActivity.podcastMinutes?.toString() || "");
     setSalawat(selectedActivity.salawat?.toString() || "");
     setNotes(selectedActivity.notes || "");
