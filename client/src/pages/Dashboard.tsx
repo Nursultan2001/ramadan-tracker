@@ -11,7 +11,9 @@ import { toast } from "sonner";
 
 export default function Dashboard() {
   const { user, isAuthenticated, loading } = useAuth({ redirectOnUnauthenticated: true });
-  const today = new Date().toISOString().split("T")[0];
+  const [selectedDate, setSelectedDate] = useState(
+  new Date().toISOString().split("T")[0]
+);
   
   // Sponsor banner
   const SponsorBanner = () => (
@@ -52,8 +54,8 @@ export default function Dashboard() {
   const [notes, setNotes] = useState("");
 
   // Queries
-  const { data: todayActivity } = trpc.activities.getActivityByDate.useQuery({
-    activityDate: today,
+  const { data: selectedActivity } = trpc.activities.getActivityByDate.useQuery({
+    activityDate: selectedDate,
   });
 
   const { data: myActivities } = trpc.activities.getMyActivities.useQuery();
@@ -62,23 +64,36 @@ export default function Dashboard() {
   const utils = trpc.useUtils();
 
   // Load today's activity if it exists
-  useEffect(() => {
-    if (todayActivity) {
-      setDailyPrayers(todayActivity.dailyPrayers || 0);
-      setTahajud(todayActivity.tahajud || 0);
-      setTarawih20(todayActivity.tarawih20 || 0);
-      setTarawih8(todayActivity.tarawih8 || 0);
-      setFasting(todayActivity.fasting || 0);
-      setQuranArabicPages(todayActivity.quranArabicPages || 0);
-      setQuranOtherLanguagePages(todayActivity.quranOtherLanguagePages || 0);
-      setIslamicBookPages(todayActivity.islamicBookPages || 0);
-      setOtherBookPages(todayActivity.otherBookPages || 0);
-
-      setPodcastMinutes(todayActivity.podcastMinutes || 0);
-      setSalawat(todayActivity.salawat || 0);
-      setNotes(todayActivity.notes || "");
-    }
-  }, [todayActivity]);
+useEffect(() => {
+  if (selectedActivity) {
+    setDailyPrayers(selectedActivity.dailyPrayers || 0);
+    setTahajud(selectedActivity.tahajud || 0);
+    setTarawih20(selectedActivity.tarawih20 || 0);
+    setTarawih8(selectedActivity.tarawih8 || 0);
+    setFasting(selectedActivity.fasting || 0);
+    setQuranArabicPages(selectedActivity.quranArabicPages || 0);
+    setQuranOtherLanguagePages(selectedActivity.quranOtherLanguagePages || 0);
+    setIslamicBookPages(selectedActivity.islamicBookPages || 0);
+    setOtherBookPages(selectedActivity.otherBookPages || 0);
+    setPodcastMinutes(selectedActivity.podcastMinutes || 0);
+    setSalawat(selectedActivity.salawat || 0);
+    setNotes(selectedActivity.notes || "");
+  } else {
+    // CLEAR form when no activity exists for that date
+    setDailyPrayers(0);
+    setTahajud(0);
+    setTarawih20(0);
+    setTarawih8(0);
+    setFasting(0);
+    setQuranArabicPages(0);
+    setQuranOtherLanguagePages(0);
+    setIslamicBookPages(0);
+    setOtherBookPages(0);
+    setPodcastMinutes(0);
+    setSalawat(0);
+    setNotes("");
+  }
+}, [selectedActivity]);
 
   // Show loading state while checking authentication
   if (loading) {
@@ -115,7 +130,7 @@ export default function Dashboard() {
     e.preventDefault();
     try {
       const result = await submitMutation.mutateAsync({
-        activityDate: today,
+        activityDate: selectedDate,
         dailyPrayers,
         tahajud,
         tarawih20,
@@ -129,14 +144,14 @@ export default function Dashboard() {
         salawat,
         notes,
       });
-      toast.success(`Activities submitted! You earned ${result.totalPoints} points today.`);
+      toast.success(`Activities submitted for ${selectedDate}! You earned ${result.totalPoints} points.`);
     } catch (error) {
       toast.error("Failed to submit activities");
     }
   };
 
   // Calculate today's points
-  const todayPoints = todayActivity?.totalPoints || 0;
+  const selectedPoints = selectedActivity?.totalPoints || 0;
   const totalPoints = (myActivities || []).reduce((sum, a) => sum + (a.totalPoints || 0), 0);
 
   return (
@@ -168,11 +183,11 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Sparkles className="h-5 w-5 text-primary" />
-                Today's Points
+                Points for {selectedDate}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl md:text-4xl font-bold text-primary">{todayPoints}</div>
+              <div className="text-3xl md:text-4xl font-bold text-primary">{selectedPoints}</div>
             </CardContent>
           </Card>
 
@@ -206,10 +221,24 @@ export default function Dashboard() {
           <div className="lg:col-span-2">
             <Card className="golden-border">
               <CardHeader>
-                <CardTitle className="text-xl md:text-2xl">Log Today's Activities</CardTitle>
+                <CardTitle className="text-xl md:text-2xl">Log Activities</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                  <div className="border-b pb-4">
+  <Label htmlFor="activityDate" className="text-xs md:text-sm">
+    Select Date
+  </Label>
+  <Input
+    id="activityDate"
+    type="date"
+    value={selectedDate}
+    onChange={(e) => setSelectedDate(e.target.value)}
+    max={new Date().toISOString().split("T")[0]}
+    className="text-sm md:text-base h-8 md:h-10"
+  />
+</div>
+                  
                   {/* Prayer Activities */}
                   <div className="border-b pb-4">
                     <h3 className="font-semibold text-base md:text-lg mb-3 text-primary">Prayer Activities</h3>
@@ -290,7 +319,7 @@ export default function Dashboard() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="quranOther" className="text-xs md:text-sm">Other Language Pages (10 pts)</Label>
+                        <Label htmlFor="quranOther" className="text-xs md:text-sm">Quran Other Language Pages (10 pts)</Label>
                         <Input
                           id="quranOther"
                           type="number"
