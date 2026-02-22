@@ -141,6 +141,7 @@ const result = await submitMutation.mutateAsync({
   quranOtherLanguagePages: Number(quranOtherLanguagePages) || 0,
   islamicBookPages: Number(islamicBookPages) || 0,
   otherBookPages: Number(otherBookPages) || 0,
+  zhevshenPages: Number(zhevshenPages) || 0,
   podcastMinutes: Number(podcastMinutes) || 0,
   salawat: Number(salawat) || 0,
   notes,
