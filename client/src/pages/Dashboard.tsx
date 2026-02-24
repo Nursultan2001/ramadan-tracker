@@ -259,7 +259,7 @@ const result = await submitMutation.mutateAsync({
                         />
                       </div>
                       <div>
-                        <Label htmlFor="tahajud" className="text-xs md:text-sm">Tahajud (30 pts each)</Label>
+                        <Label htmlFor="tahajud" className="text-xs md:text-sm">Tahajud (30 pts each) = 1 dep jazasyz</Label>
                         <Input
                           id="tahajud"
                           type="number"
@@ -270,7 +270,7 @@ const result = await submitMutation.mutateAsync({
                         />
                       </div>
                       <div>
-                        <Label htmlFor="tarawih20" className="text-xs md:text-sm">Tarawih 20 Rakat (100 pts)</Label>
+                        <Label htmlFor="tarawih20" className="text-xs md:text-sm">Tarawih 20 Rakat (100 pts) = 1 dep jazasyz! </Label>
                         <Input
                           id="tarawih20"
                           type="number"
@@ -281,7 +281,7 @@ const result = await submitMutation.mutateAsync({
                         />
                       </div>
                       <div>
-                        <Label htmlFor="tarawih8" className="text-xs md:text-sm">Tarawih 8 Rakat (40 pts)</Label>
+                        <Label htmlFor="tarawih8" className="text-xs md:text-sm">Tarawih 8 Rakat (40 pts) = 1 dep jazasyz</Label>
                         <Input
                           id="tarawih8"
                           type="number"
@@ -292,7 +292,7 @@ const result = await submitMutation.mutateAsync({
                         />
                       </div>
                       <div>
-                        <Label htmlFor="fasting" className="text-xs md:text-sm">Fasting (100 pts)</Label>
+                        <Label htmlFor="fasting" className="text-xs md:text-sm">Fasting (100 pts) = 1 dep jazasyz</Label>
                         <Input
                           id="fasting"
                           type="number"

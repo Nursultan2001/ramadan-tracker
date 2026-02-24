@@ -165,8 +165,9 @@ export default function Home() {
                   <div>
                     <p className="font-semibold text-primary mb-1">📚 Learning</p>
                     <ul className="space-y-1 text-muted-foreground ml-2">
-                      <li>• Islamic Books: 8 pts/page</li>
-                      <li>• Other Books: 4 pts/page</li>
+                      <li>• Islamic Books: 10 pts/page</li>
+                      <li>• Other Books: 8 pts/page</li>
+                      <li>• Zhevshen Pages: 5 pts/page</li>
                       <li>• Podcasts: 3 pts/minute</li>
                       <li>• Salawat: 1 pt per 10</li>
                     </ul>
